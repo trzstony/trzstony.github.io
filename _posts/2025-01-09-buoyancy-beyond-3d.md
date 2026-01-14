@@ -20,7 +20,7 @@ where:
 - $g$ is the acceleration due to gravity
 - $h$ is the depth below the surface
 
-![Pressure vs Depth]({{ site.baseurl }}/assets/images/buoyancy-beyond-3d/pressure_vs_depth.png)
+![Pressure vs Depth]({{ "/assets/images/buoyancy-beyond-3d/pressure_vs_depth.png" | relative_url }})
 
 ### Force on a Submerged Object
 
@@ -30,7 +30,7 @@ $$d\vec{F} = -P(h) \hat{n} \, dA$$
 
 where $\hat{n}$ is the unit normal vector pointing outward from the object's surface, and the negative sign indicates that pressure acts inward (compressive).
 
-![Submerged Object with Pressure Forces]({{ site.baseurl }}/assets/images/buoyancy-beyond-3d/submerged_object_schematic.png)
+![Submerged Object with Pressure Forces]({{ "/assets/images/buoyancy-beyond-3d/submerged_object_schematic.png" | relative_url }})
 
 The total force on the object is obtained by integrating over the entire surface $S$:
 
@@ -72,7 +72,7 @@ $$F_b = \rho g V_{\text{displaced}}$$
 
 This is **Archimedes' principle**: the buoyant force equals the weight of the fluid displaced by the object.
 
-![Buoyancy Force vs Displaced Volume]({{ site.baseurl }}/assets/images/buoyancy-beyond-3d/buoyancy_force.png)
+![Buoyancy Force vs Displaced Volume]({{ "/assets/images/buoyancy-beyond-3d/buoyancy_force.png" | relative_url }})
 
 ### Vector Form
 

@@ -54,5 +54,5 @@ When creating figures for a new post:
 Generated images are saved to `assets/images/[post-name]/` and can be referenced in your markdown posts using:
 
 ```markdown
-![Figure description]({{ site.baseurl }}/assets/images/buoyancy-beyond-3d/figure_name.png)
+![Figure description]({{ "/assets/images/buoyancy-beyond-3d/figure_name.png" | relative_url }})
 ```

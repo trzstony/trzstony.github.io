@@ -4,57 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ site.title }}{% if page.title %} - {{ page.title }}{% endif %}</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      line-height: 1.6;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      color: #333;
-    }
-    header {
-      border-bottom: 2px solid #eee;
-      padding-bottom: 20px;
-      margin-bottom: 30px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 2em;
-    }
-    h2 {
-      margin-top: 30px;
-    }
-    article {
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-    }
-    article:last-child {
-      border-bottom: none;
-    }
-    .post-date {
-      color: #666;
-      font-size: 0.9em;
-      margin-top: 5px;
-    }
-    a {
-      color: #0066cc;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  {% seo %}
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
 </head>
-<body>
-  <header>
-    <h1>{{ site.title }}</h1>
-    {% if site.description %}<p>{{ site.description }}</p>{% endif %}
+<body class="page-{{ page.layout }}{% if page.url == '/' %} home{% endif %}">
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-title">
+        <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+        {% if site.description %}<div class="site-tagline">{{ site.description }}</div>{% endif %}
+      </div>
+
+      {% if site.data.navigation %}
+      <nav class="site-nav" aria-label="Primary navigation">
+        {% for item in site.data.navigation %}
+          {% assign item_url = item.url | relative_url %}
+          <a class="site-nav__link{% if page.url == item.url %} is-active{% endif %}" href="{{ item_url }}">{{ item.title }}</a>
+        {% endfor %}
+      </nav>
+      {% endif %}
+    </div>
   </header>
   
-  <main>
+  <main class="site-main">
     {{ content }}
   </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span>&copy; {{ site.time | date: '%Y' }} {{ site.data.profile.name | default: site.title }}</span>
+    </div>
+  </footer>
 </body>
 </html>

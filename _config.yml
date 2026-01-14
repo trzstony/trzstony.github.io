@@ -1,8 +1,16 @@
 theme: jekyll-theme-minimal
-title: Personal Blog
-description: Welcome to my personal blog
+
+# Site identity
+title: Tianrun Zhao
+description: ""
+
+# Optional (recommended on GitHub Pages):
+# url: https://YOUR_USERNAME.github.io
+# baseurl: ""
+
+markdown: kramdown
+
 plugins:
   - jekyll-feed
-  - jekyll-paginate
-paginate: 5
-paginate_path: "/page:num/"
+  - jekyll-seo-tag
+  - jekyll-sitemap
