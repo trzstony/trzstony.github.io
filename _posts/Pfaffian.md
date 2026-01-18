@@ -1,0 +1,355 @@
+---
+layout: post
+title: "Pfaffian"
+date: 2026-01-17
+---
+This post proves the properties of the Pfaffian using only the wedge product calculation.
+
+
+## Goal of this post
+
+### Goal
+In this post, I will prove the properties of the Pfaffian using **only** the wedge product calculation.
+
+### Reason
+There are many ways to prove the properties of the Pfaffian:
+
+1. Using the Gaussian integration.
+2. Using the spectral decomposition of the skew-symmetric matrix.
+3. Using symmetric group operations.
+
+... and so on.
+
+However, I find the wedge product calculation to be the most straightforward and elegant.
+
+Because:
+- It packages all antisymmetry into $\wedge$, avoiding permutation indices $\sigma(i)$.
+- It doesn't require spectral decomposition of the skew-symmetric matrix, which only works over real or complex fields.
+- It gives a general way to compute formulas involving the Pfaffian, which can be used in other contexts.
+
+## Definition of the Pfaffian
+
+Given a skew-symmetric $2n \times 2n$ matrix $A = (a_{ij})$, we can associate a bivector
+$$
+\omega_A = \sum_{i < j} a_{ij} \; e_i \wedge e_j,
+$$
+where $\{e_1, e_2, \ldots, e_{2n}\}$ is the standard basis of $\mathbb{R}^{2n}$.
+
+The Pfaffian is defined by the equation
+$$
+\frac{1}{n!} \omega_A^{n} = \operatorname{pf}(A) \; e_1 \wedge e_2 \wedge \cdots \wedge e_{2n},
+$$
+where $\omega^n = \underbrace{\omega \wedge \cdots \wedge \omega}_{n\text{ times}}$.
+
+
+### Remark:
+
+Notice that
+$$
+\omega_A = \frac{1}{2} (e_1, e_2, \ldots, e_{2n}) \begin{pmatrix}
+0 & a_{12} & \cdots & a_{1,2n} \\
+-a_{12} & 0 & \cdots & a_{2,2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+-a_{1,2n} & -a_{2,2n} & \cdots & 0
+\end{pmatrix} \begin{pmatrix}
+e_1 \\
+e_2 \\
+\vdots \\
+e_{2n}
+\end{pmatrix}
+$$
+where the multiplication is understood as the wedge product.
+
+Let
+$$
+E := (e_1, e_2, \ldots, e_{2n}),
+$$
+then
+$$
+\omega_A = \frac{1}{2} E A E^{\text{T}}
+$$
+
+
+## Preliminary Lemmas
+>Lemma 1:
+>Let $M$ be a $n \times n$ matrix, if we have
+>$$
+> (f_1, f_2, \ldots, f_{n}) = (e_1, e_2, \ldots, e_{n}) M,
+>$$
+>then
+>$$
+> f_1 \wedge f_2 \wedge \cdots \wedge f_{n} = \operatorname{det}(M)\; e_1 \wedge e_2 \wedge \cdots \wedge e_{n}
+>$$
+
+
+## Properties of the Pfaffian
+>Property 1: $$\operatorname{pf}(BAB^{\text{T}}) = \operatorname{pf}(A) \operatorname{det}(B)$$
+
+Proof:
+
+First,
+$$
+\begin{aligned}
+\omega_{BAB^{\text{T}}} &= \frac{1}{2} E (BAB^{\text{T}}) E^{\text{T}} \\
+&= \frac{1}{2} (E B) A (EB)^{\text{T}}
+\end{aligned}
+$$
+
+Let
+$$
+(f_1, f_2, \ldots, f_{2n}) = (e_1, e_2, \ldots, e_{2n}) B.
+$$
+
+On the one hand,
+$$
+\frac{1}{n!} \omega_{BAB^{\text{T}}}^{n} = \operatorname{pf}(BAB^{\text{T}}) \; e_1 \wedge e_2 \wedge \cdots \wedge e_{2n}.
+$$
+
+On the other hand,
+$$
+\begin{aligned}
+\frac{1}{n!} \omega_{BAB^{\text{T}}}^{n} &= \operatorname{pf}(A) \; f_1 \wedge f_2 \wedge \cdots \wedge f_{2n} \\
+&= \operatorname{pf}(A) \; \operatorname{det}(B) \; e_1 \wedge e_2 \wedge \cdots \wedge e_{2n}.
+\end{aligned}
+$$
+
+Therefore,
+$$
+\boxed{\operatorname{pf}(BAB^{\text{T}}) = \operatorname{pf}(A) \operatorname{det}(B).}
+$$
+
+>Property 2: $$\operatorname{pf}(A^{\text{T}}) = \operatorname{pf}(-A) = (-1)^{n} \operatorname{pf}(A)$$
+
+Proof:
+
+Notice that
+$$
+\omega_{A^{\text{T}}} = \frac{1}{2} E A^{\text{T}} E^{\text{T}} = \frac{1}{2} E (-A) E^{\text{T}} = -\omega_{A}.
+$$
+
+On the one hand,
+$$
+\frac{1}{n!} \omega_{A^{\text{T}}}^{n} = \operatorname{pf}(A^{\text{T}}) \; e_1 \wedge e_2 \wedge \cdots \wedge e_{2n}.
+$$
+
+On the other hand,
+$$
+\begin{aligned}
+\frac{1}{n!} \omega_{A^{\text{T}}}^{n} &= \frac{1}{n!} (-\omega_{A})^{n} \\
+&= (-1)^{n} \frac{1}{n!} \omega_{A}^{n} \\
+&= (-1)^{n} \operatorname{pf}(A) \; e_1 \wedge e_2 \wedge \cdots \wedge e_{2n}.
+\end{aligned}
+$$
+
+Therefore,
+$$
+\boxed{\operatorname{pf}(A^{\text{T}}) = \operatorname{pf}(-A) = (-1)^{n} \operatorname{pf}(A).}
+$$
+
+>Property 3: $$\operatorname{pf}(\lambda A) = \lambda^n \operatorname{pf}(A)$$
+
+Proof:
+
+Notice that
+$$
+\omega_{\lambda A} = \frac{1}{2} E (\lambda A) E^{\text{T}} = \lambda \frac{1}{2} E A E^{\text{T}} = \lambda \omega_{A}.
+$$
+
+On the one hand,
+$$
+\frac{1}{n!} \omega_{\lambda A}^{n} = \operatorname{pf}(\lambda A) \; e_1 \wedge e_2 \wedge \cdots \wedge e_{2n}.
+$$
+
+On the other hand,
+$$
+\begin{aligned}
+\frac{1}{n!} \omega_{\lambda A}^{n} &= \lambda^n \frac{1}{n!} \omega_{A}^{n} \\
+&= \lambda^n \operatorname{pf}(A) \; e_1 \wedge e_2 \wedge \cdots \wedge e_{2n}.
+\end{aligned}
+$$
+
+Therefore,
+$$
+\boxed{\operatorname{pf}(\lambda A) = \lambda^n \operatorname{pf}(A).}
+$$
+>Property 4: Let $A\in \mathbb{R}^{2n \times 2n}$ and $B\in \mathbb{R}^{2m \times 2m}$, then $$\operatorname{pf}(A\oplus B) = \operatorname{pf}(A) \operatorname{pf}(B)$$
+
+Proof:
+
+Let $$E = (e_1, e_2, \ldots, e_{2n})$$ and $$U = (u_{1}, u_{2}, \ldots, u_{2m})$$ be bases of $\mathbb{R}^{2n}$ and $\mathbb{R}^{2m}$, respectively.
+
+Notice that
+$$
+\omega_{A\oplus B} = \frac{1}{2} (E, U) (A\oplus B) (E, U)^{\text{T}} = \frac{1}{2} E A E^{\text{T}} + \frac{1}{2} U B U^{\text{T}} = \omega_{A} + \omega_{B}.
+$$
+
+On the one hand,
+$$
+\frac{1}{(n+m)!} \omega_{A\oplus B}^{n+m} = \operatorname{pf}(A\oplus B) \; e_1 \wedge \cdots \wedge e_{2n} \wedge u_{1} \wedge \cdots \wedge u_{2m}.
+$$
+On the other hand,
+$$
+\begin{aligned}
+\frac{1}{(n+m)!} \omega_{A\oplus B}^{n+m} &= \frac{1}{(n+m)!} (\omega_{A} + \omega_{B})^{n+m} \\
+&= \frac{1}{(n+m)!} \sum_{k=0}^{n+m} \binom{n+m}{k} (\omega_{A}^{k} \wedge \omega_{B}^{n+m-k})
+\end{aligned}
+$$
+however,
+$$
+\omega_{A}^{k} = 0 \quad (\text{for } k > n ),
+$$
+$$
+\omega_{B}^{l} = 0 \quad (\text{for } l > m ).
+$$
+The only non-zero term in $\omega_{A}^{k} \wedge \omega_{B}^{n+m-k}$ is when $k = n$, so
+$$
+\begin{aligned}
+\frac{1}{(n+m)!} \omega_{A\oplus B}^{n+m} &= \frac{1}{(n+m)!} \binom{n+m}{n} \omega_{A}^{n} \wedge \omega_{B}^{m} \\
+&= \frac{1}{n!}\omega_{A}^{n} \wedge \frac{1}{m!}\omega_{B}^{m} \\
+&= (\operatorname{pf}(A) \; e_1 \wedge \cdots \wedge e_{2n}) \wedge (\operatorname{pf}(B) \; u_{1} \wedge \cdots \wedge u_{2m})\\
+&= \operatorname{pf}(A) \operatorname{pf}(B) \; e_1 \wedge \cdots \wedge e_{2n} \wedge u_{1} \wedge \cdots \wedge u_{2m}.
+\end{aligned}
+$$
+
+Therefore,
+$$
+\boxed{\operatorname{pf}(A\oplus B) = \operatorname{pf}(A) \operatorname{pf}(B).}
+$$
+
+
+>Property 5: 
+>For an arbitrary $n \times n$ matrix $M$, let
+>$$
+>K = \begin{bmatrix}
+>O & M \\
+>- M^{\text{T}} & O
+>\end{bmatrix},
+>$$
+>then
+>$$
+>\operatorname{pf}(K)
+>= 
+> (-1)^{n(n-1)/2} \operatorname{det}(M).
+>$$
+
+Proof:
+
+Let $$E=(e_1,\dots,e_n)$$ and $$U=(u_1,\dots,u_n)$$ be bases of two copies of $\mathbb{R}^n$, and consider the basis
+$$
+(E,U)=(e_1,\dots,e_n,u_1,\dots,u_n)
+$$
+of $\mathbb{R}^{2n} \cong \mathbb{R}^n\oplus \mathbb{R}^n$.
+
+
+Matrix $K$ has an associated 2-form:
+$$
+\begin{aligned}
+\omega_K &= \frac12 (E,U)\; K \; (E,U)^{\text{T}} \\
+&= \frac12 (E,U)\begin{pmatrix}
+O & M \\
+- M^{\text{T}} & O
+\end{pmatrix} \begin{pmatrix}
+E^{\text{T}} \\
+U^{\text{T}}
+\end{pmatrix} \\
+&= \frac12 \big(E\,M\,U^{\text{T}} - U\,M^{\text{T}}\,E^{\text{T}}\big).
+\end{aligned}
+$$
+Using $u_j\wedge e_i=-e_i\wedge u_j$, we get
+$$
+-U\,M^{\text{T}}\,E^{\text{T}} = -\sum_{i,j} M_{ij}\,u_j\wedge e_i = \sum_{i,j} M_{ij}\,e_i\wedge u_j = E\,M\,U^{\text{T}},
+$$
+so the two terms add and
+$$
+\boxed{\;\omega_K = E\,M\,U^{\text{T}} = \sum_{i,j=1}^n M_{ij}\, e_i\wedge u_j.\;}
+$$
+
+Now compute the top wedge power. Write
+$$
+\omega_K=E\,M\,U^{\text{T}}=\sum_{i=1}^n e_i\wedge v_i,\qquad v_i:=\sum_{j=1}^n M_{ij}u_j.
+$$
+Expanding $\big(\sum_i e_i\wedge v_i\big)^n$, any term with a repeated $e_i$ vanishes, so only the terms using all $e_1,\dots,e_n$ survive. Hence
+$$
+\frac1{n!}\,\omega_K^n=(e_1\wedge v_1)\wedge\cdots\wedge(e_n\wedge v_n)
+= (-1)^{n(n-1)/2}\,(e_1\wedge\cdots\wedge e_n)\wedge(v_1\wedge\cdots\wedge v_n).
+$$
+Since $(v_1,\dots,v_n)=(u_1,\dots,u_n)M^{\text{T}}$, by Lemma 1, we have
+$$
+v_1\wedge\cdots\wedge v_n=\det(M^{\text{T}})\;u_1\wedge\cdots\wedge u_n=\det(M)\;u_1\wedge\cdots\wedge u_n.
+$$
+Therefore,
+$$
+\frac1{n!}\,\omega_K^n = (-1)^{n(n-1)/2}\det(M)\; e_1\wedge\cdots\wedge e_n\wedge u_1\wedge\cdots\wedge u_n.
+$$
+By the definition of Pfaffian,
+$$
+\frac{1}{n!}\,\omega_K^n
+= \operatorname{pf}(K)\; e_1\wedge\cdots\wedge e_n\wedge u_1\wedge\cdots\wedge u_n.
+$$
+
+Therefore,
+$$
+\boxed{\operatorname{pf}(K)=(-1)^{n(n-1)/2}\det(M).}
+$$
+
+>Property 6: $$\det(A)=\operatorname{pf}(A)^2$$
+
+Idea: The Pfaffian arises from $\omega_A^n$, which records only half the information of $A$. To access $\det(A)$, we enlarge $A$ to a higher-dimensional skew-symmetric matrix $K$ and compare the corresponding wedge products.
+
+Proof:
+Let $A\in\mathbb{R}^{2n\times 2n}$ be skew-symmetric. Consider
+$$
+K=\begin{pmatrix}
+O & A\\
+- A^{\text{T}} & O
+\end{pmatrix}
+=\begin{pmatrix}
+O & A\\
+A & O
+\end{pmatrix}.
+$$
+On the one hand, by Property 5 with $M=A$,
+$$
+\operatorname{pf}(K)
+= (-1)^{(2n)(2n-1)/2}\det(A)
+= (-1)^n\det(A).
+$$
+
+On the other hand, let
+$$
+P=\frac{1}{\sqrt2}\begin{pmatrix}
+I & I\\
+I & -I
+\end{pmatrix} \quad (\text{block size }2n\times 2n, P\in \mathbb{R}^{4n \times 4n}).
+$$
+Then a direct block computation shows
+$$
+P\,K\,P^{\text{T}} = \begin{pmatrix}
+A & O\\
+O & -A
+\end{pmatrix} = A\oplus(-A).
+$$
+By Property 1,
+$$
+\operatorname{pf}(PKP^{\text{T}}) = \operatorname{pf}(K)\,\det(P).
+$$
+Moreover $\det(P)=1$, so
+$$
+\operatorname{pf}(PKP^{\text{T}}) = \operatorname{pf}(K) = \operatorname{pf}(A\oplus(-A)).
+$$
+Using Property 4 and Property 2,
+$$
+\operatorname{pf}(A\oplus(-A)) = \operatorname{pf}(A)\operatorname{pf}(-A) = (-1)^n (\operatorname{pf}(A))^2.
+$$
+Combining the two expressions for $\operatorname{pf}(K)$ gives
+$$
+(-1)^n\det(A)=\operatorname{pf}(K)=\operatorname{pf}(A\oplus(-A))=(-1)^n (\operatorname{pf}(A))^2,
+$$
+so
+$$
+\boxed{\det(A)=(\operatorname{pf}(A))^2.}
+$$
+
+## References
+
+- Wikipedia contributors, *Pfaffian*, Wikipedia, The Free Encyclopedia.

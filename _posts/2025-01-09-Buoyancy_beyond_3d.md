@@ -3,6 +3,7 @@ layout: post
 title: "Buoyancy beyond 3D"
 date: 2025-01-09
 ---
+This post explores how the concept of buoyancy extends beyond three-dimensional space, providing geometric and mathematical insights applicable in higher dimensions.
 
 ## Derivation of the 3D Buoyancy Formula
 
