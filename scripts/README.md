@@ -8,8 +8,6 @@ Each post has its own subdirectory under `scripts/`, named after the post slug o
 
 ```
 scripts/
-  ├── buoyancy-beyond-3d/
-  │   └── generate_figures.py
   ├── [other-post-name]/
   │   └── generate_figures.py
   └── README.md
@@ -19,7 +17,7 @@ scripts/
 
 1. Navigate to the specific post's script directory:
    ```bash
-   cd scripts/buoyancy-beyond-3d
+   cd scripts/[post-name]
    ```
 
 2. Run the figure generation script:
@@ -54,5 +52,5 @@ When creating figures for a new post:
 Generated images are saved to `assets/images/[post-name]/` and can be referenced in your markdown posts using:
 
 ```markdown
-![Figure description]({{ "/assets/images/buoyancy-beyond-3d/figure_name.png" | relative_url }})
+![Figure description]({{ "/assets/images/[post-name]/figure_name.png" | relative_url }})
 ```
