@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Fiber Coil Sensor Experiment Report"
-date: 2026-04-10
+date: 2023
 ---
 
 *Translated and lightly adapted from the original Chinese report.*
