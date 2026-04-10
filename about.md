@@ -4,23 +4,23 @@ title: About
 permalink: /about/
 ---
 
-I’m {{ site.data.profile.name }}, a {{ site.data.profile.role }} in {{ site.data.profile.affiliation }}.
+I'm Tianrun Zhao, a PhD student in Computer Science at Stony Brook University. I'm broadly interested in formal mathematics, programming languages, and AI for theorem proving.
 
-## Research Snapshot
+## Education
 
-- **Focus:** universal structures in mathematics; representations of mathematics in computer languages; AI for theorem proving.
-- **Keywords:** formal reasoning, theorem proving, programming languages, ML, quantum information.
+**Stony Brook University** &mdash; PhD in Computer Science *(2024 – present)*
 
-## Background
+**Nanjing University** &mdash; B.S. in Physics *(2020 – 2024)*  
 
-- **Education**
-  - Nanjing University — B.S. in Physics (2020–2024)
-  - Stony Brook University — PhD in Computer Science (2025–present)
-- **Experience**
-  - (to be added)
-- **Service**
-  - (to be added)
+## Experience
 
-## Projects
+**Software Engineering Intern** &mdash; Cadence Design Systems *(Summer 2025)*
 
-- (to be added)
+**Research Assistant** &mdash; UC San Diego (Remote), advised by Prof. Yi-Zhuang You *(2023 – present)*
+
+**Research Assistant** &mdash; Nanjing University, advised by Prof. Jianguo Wan *(2022)*
+
+## Publications
+
+**Formalizing CHSH Rigidity in Lean 4**  
+Tianrun Zhao et al. &mdash; [arXiv:2604.03884](https://arxiv.org/abs/2604.03884), April 2026
