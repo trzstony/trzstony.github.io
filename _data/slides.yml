@@ -1,0 +1,7 @@
+# Add future presentations here; they will appear on the Slides page.
+- title: Quantum Communication
+  url: /slides/quantum-communication/
+  description: Animated slides on quantum communication and information transfer.
+- title: Quantum Fourier Transform
+  url: /slides/qft/
+  description: Animated slides introducing the quantum Fourier transform.
