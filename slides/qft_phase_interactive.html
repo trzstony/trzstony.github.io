@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fourier Phase Matrix</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"], ["$", "$"]] },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --black: #000;
+      --white: #f4f4f2;
+      --yellow: #d8df20;
+      --muted: #a8a8a2;
+      --grid: #4b4b47;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--black);
+      color: var(--white);
+      font-family: "CMU Serif", "Latin Modern Roman", "Computer Modern", "STIX Two Text", Georgia, "Times New Roman", serif;
+      text-rendering: geometricPrecision;
+    }
+
+    main {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(1rem, 3vh, 2rem) clamp(1rem, 3vw, 3rem);
+    }
+
+    h1 {
+      margin: 0 0 .35rem;
+      font-size: clamp(1.35rem, 2.7vw, 2.3rem);
+      font-weight: 400;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin: .8rem 0 .25rem;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: .9rem;
+    }
+
+    label { color: var(--muted); }
+    input, output {
+      border: 1px solid var(--grid);
+      border-radius: .3rem;
+      background: #111;
+      color: var(--white);
+      padding: .38rem .55rem;
+      font: inherit;
+    }
+    input[type="range"] {
+      width: min(34rem, 58vw);
+      accent-color: var(--yellow);
+      cursor: pointer;
+    }
+    .view-tools {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      margin: .45rem 0 .4rem;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: .78rem;
+    }
+    .view-button {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      border: 1px solid var(--grid);
+      border-radius: .35rem;
+      padding: .28rem .5rem;
+      background: #111;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .view-button:hover, .view-button:focus-visible,
+    .view-button[aria-pressed="true"] {
+      border-color: var(--yellow);
+      color: var(--white);
+      outline: none;
+    }
+    .view-button[hidden] { display: none; }
+    .view-button svg { width: 1.45rem; height: 1.1rem; overflow: visible; }
+    #columnCurveButton svg { width: 1rem; height: 1.45rem; }
+    .view-button .icon-line { fill: none; stroke: currentColor; stroke-width: 1.8; }
+    .view-button .icon-dash { stroke-dasharray: 3 2; }
+    output {
+      min-width: 2.4rem;
+      border-color: var(--yellow);
+      color: var(--yellow);
+      text-align: center;
+    }
+
+    #matrix {
+      width: min(98vw, 1800px);
+      height: min(79vh, 1000px);
+      min-height: 0;
+      display: block;
+      margin: 0 auto;
+      shape-rendering: geometricPrecision;
+      text-rendering: geometricPrecision;
+    }
+    #matrixView, #curveView {
+      width: min(98vw, 1800px);
+      flex: 1;
+      min-height: 0;
+    }
+    #curveView[hidden], #matrixView[hidden] { display: none; }
+    #curveView {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #curveHeading {
+      margin: .1rem 0 .15rem;
+      color: var(--white);
+      font: 1.1rem/1.2 system-ui, -apple-system, sans-serif;
+      text-align: center;
+    }
+    #curveChart {
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      display: block;
+      shape-rendering: geometricPrecision;
+      text-rendering: geometricPrecision;
+    }
+    .curve-grid { stroke: #3d3d39; stroke-width: 1; }
+    .curve-zero { stroke: #8b8b83; stroke-width: 1.15; }
+    .curve-axis-label, .curve-row-label {
+      fill: var(--muted);
+      font: 15px system-ui, -apple-system, sans-serif;
+    }
+    .curve-caption {
+      fill: var(--white);
+      font: 16px system-ui, -apple-system, sans-serif;
+    }
+    .curve-line {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      cursor: crosshair;
+    }
+    .curve-line.imaginary { stroke-dasharray: 10 7; stroke-width: 2.6; }
+    .curve-line:hover { stroke-width: 4.7; }
+    #curveLegend {
+      color: var(--muted);
+      font: .78rem system-ui, -apple-system, sans-serif;
+      text-align: center;
+      margin: .05rem 0 .2rem;
+    }
+
+    .cell { cursor: crosshair; }
+    .cell-frame { fill: transparent; stroke: var(--grid); stroke-width: 1; }
+    .cell:hover .cell-frame, .cell:focus .cell-frame {
+      stroke: var(--yellow);
+      stroke-width: 2.2;
+      fill: #171800;
+    }
+    .unit-circle { fill: none; stroke: var(--white); stroke-width: 1.5; }
+    .axis { stroke: #77776f; stroke-width: .7; }
+    .phase-vector { stroke: var(--yellow); stroke-width: 2.2; stroke-linecap: round; }
+    .axis-label, .row-label {
+      fill: var(--white);
+      font-family: "CMU Serif", "Latin Modern Roman", "Computer Modern", "STIX Two Text", Georgia, "Times New Roman", serif;
+      font-size: 16px;
+    }
+
+    #tooltip {
+      position: fixed;
+      z-index: 2;
+      display: none;
+      max-width: min(300px, 80vw);
+      pointer-events: none;
+      padding: .55rem .7rem;
+      border: 1px solid var(--yellow);
+      border-radius: .35rem;
+      background: rgba(0, 0, 0, .94);
+      color: var(--white);
+      font: .82rem/1.35 system-ui, -apple-system, sans-serif;
+      white-space: pre-line;
+    }
+
+    mjx-container { color: inherit; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Fourier Phase Matrix</h1>
+    <div class="controls">
+      <label for="dimension">Dimension (N)</label>
+      <input id="dimension" type="range" min="2" max="20" step="1" value="5">
+      <output id="dimensionValue" for="dimension">5</output>
+    </div>
+    <div class="view-tools" role="group" aria-label="Phase curve views">
+      <button class="view-button" id="matrixButton" type="button" aria-pressed="true" title="Show the phase matrix">
+        <svg viewBox="0 0 24 20" aria-hidden="true">
+          <circle class="icon-line" cx="5" cy="5" r="2.2"></circle>
+          <circle class="icon-line" cx="12" cy="5" r="2.2"></circle>
+          <circle class="icon-line" cx="19" cy="5" r="2.2"></circle>
+          <circle class="icon-line" cx="5" cy="15" r="2.2"></circle>
+          <circle class="icon-line" cx="12" cy="15" r="2.2"></circle>
+          <circle class="icon-line" cx="19" cy="15" r="2.2"></circle>
+        </svg>
+        <span>Phase matrix</span>
+      </button>
+      <button class="view-button" id="lineCurveButton" type="button" aria-pressed="false" title="Show phase curves along rows">
+        <svg viewBox="0 0 32 20" aria-hidden="true">
+          <path class="icon-line" d="M2 14 C7 2, 11 2, 16 10 S25 18, 30 5"></path>
+          <path class="icon-line icon-dash" d="M2 6 C7 18, 11 18, 16 10 S25 2, 30 15"></path>
+        </svg>
+        <span>Row curves</span>
+      </button>
+      <button class="view-button" id="columnCurveButton" type="button" aria-pressed="false" title="Show phase curves down columns">
+        <svg viewBox="0 0 20 32" aria-hidden="true">
+          <path class="icon-line" d="M6 2 C18 7, 18 11, 10 16 S2 25, 15 30"></path>
+          <path class="icon-line icon-dash" d="M14 2 C2 7, 2 11, 10 16 S18 25, 5 30"></path>
+        </svg>
+        <span>Column curves</span>
+      </button>
+      <button class="view-button" id="frequencyButton" type="button" aria-pressed="false" hidden title="Reduce equivalent frequencies modulo N">
+        <svg viewBox="0 0 32 20" aria-hidden="true">
+          <path class="icon-line" d="M2 13 C7 3, 12 3, 16 10 S25 17, 30 7"></path>
+          <path class="icon-line icon-dash" d="M2 8 C7 17, 12 17, 16 10 S25 3, 30 13"></path>
+        </svg>
+        <span>Reduce aliases</span>
+      </button>
+    </div>
+    <div id="matrixView">
+      <svg id="matrix" role="img" aria-label="Fourier phase matrix"></svg>
+    </div>
+    <div id="curveView" hidden>
+      <div id="curveHeading">Phase curves along rows</div>
+      <svg id="curveChart" role="img" aria-label="Fourier phase curves"></svg>
+      <div id="curveLegend">solid = real part &nbsp;&nbsp; dashed = imaginary part</div>
+    </div>
+  </main>
+  <div id="tooltip" role="status"></div>
+
+  <script>
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const YELLOW = "#d8df20";
+    const dimensionInput = document.getElementById("dimension");
+    const dimensionValue = document.getElementById("dimensionValue");
+    const svg = document.getElementById("matrix");
+    const matrixView = document.getElementById("matrixView");
+    const curveView = document.getElementById("curveView");
+    const curveHeading = document.getElementById("curveHeading");
+    const curveChart = document.getElementById("curveChart");
+    const curveLegend = document.getElementById("curveLegend");
+    const matrixButton = document.getElementById("matrixButton");
+    const lineCurveButton = document.getElementById("lineCurveButton");
+    const columnCurveButton = document.getElementById("columnCurveButton");
+    const frequencyButton = document.getElementById("frequencyButton");
+    const tooltip = document.getElementById("tooltip");
+    let lastTooltipMessage = "";
+    let curveMode = null;
+    let reduceFrequencies = false;
+
+    function element(name, attributes = {}) {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+      return node;
+    }
+
+    function textNode(value, attributes = {}) {
+      const node = element("text", attributes);
+      node.textContent = value;
+      return node;
+    }
+
+    function formatComplex(real, imaginary) {
+      const r = Math.abs(real) < 1e-9 ? 0 : real;
+      const i = Math.abs(imaginary) < 1e-9 ? 0 : imaginary;
+      const realText = r.toFixed(3);
+      const imagText = `${Math.abs(i).toFixed(3)}i`;
+      if (i === 0) return realText;
+      if (r === 0) return `${i < 0 ? "−" : ""}${imagText}`;
+      return `${realText} ${i < 0 ? "−" : "+"} ${imagText}`;
+    }
+
+    function formatPhaseDegrees(angle) {
+      const degrees = ((angle * 180 / Math.PI) % 360 + 360) % 360;
+      const rounded = Math.round(degrees * 10) / 10;
+      const label = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+      return `${label}°`;
+    }
+
+    function showTooltip(event, message) {
+      if (message !== lastTooltipMessage) {
+        tooltip.innerHTML = message;
+        lastTooltipMessage = message;
+        if (window.MathJax?.typesetPromise) {
+          window.MathJax.typesetPromise([tooltip]);
+        }
+      }
+      tooltip.style.display = "block";
+      tooltip.style.left = `${Math.min(event.clientX + 14, window.innerWidth - tooltip.offsetWidth - 12)}px`;
+      tooltip.style.top = `${Math.min(event.clientY + 14, window.innerHeight - tooltip.offsetHeight - 12)}px`;
+    }
+
+    function hideTooltip() { tooltip.style.display = "none"; }
+
+    function curveColor(index, count) {
+      const hue = count === 1 ? 0 : (index / (count - 1)) * 330;
+      return `hsl(${hue}, 96%, 53%)`;
+    }
+
+    function makePath(points) {
+      return points.map((point, index) =>
+        `${index === 0 ? "M" : "L"}${point[0].toFixed(2)},${point[1].toFixed(2)}`
+      ).join(" ");
+    }
+
+    function drawCurveChart() {
+      if (!curveMode) return;
+      let N = Number.parseInt(dimensionInput.value, 10);
+      if (!Number.isFinite(N)) N = 5;
+      const width = 1280;
+      const height = 700;
+      const isColumn = curveMode === "column";
+      const margin = isColumn
+        ? { left: 72, right: 28, top: 42, bottom: 54 }
+        : { left: 88, right: 28, top: 34, bottom: 54 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const bandSize = (isColumn ? plotWidth : plotHeight) / N;
+      const waveSize = bandSize * .34;
+      const xForRow = value => margin.left + (value / Math.max(1, N - 1)) * plotWidth;
+      const yForRow = (band, value) =>
+        margin.top + bandSize * (band + .5) - value * waveSize;
+      const xForColumn = (band, value) =>
+        margin.left + bandSize * (band + .5) + value * waveSize;
+      const yForColumn = value =>
+        margin.top + (value / Math.max(1, N - 1)) * plotHeight;
+      curveChart.replaceChildren();
+      curveChart.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      curveChart.setAttribute(
+        "aria-label",
+        `${isColumn ? "Column" : "Row"} Fourier phase curves, dimension ${N}`
+      );
+
+      const title = element("text", {
+        x: margin.left, y: 20, class: "curve-caption"
+      });
+      title.textContent = isColumn
+        ? "Columns: fixed x, phase varies vertically with y"
+        : "Rows: fixed y, phase varies horizontally with x";
+      curveChart.appendChild(title);
+
+      const addPath = (points, part, fixed, frequency) => {
+        const frequencyCount = reduceFrequencies ? Math.floor(N / 2) + 1 : N;
+        const color = curveColor(frequency, Math.max(1, frequencyCount - 1));
+        const label = part === "real" ? "cosine / real" : "sine / imaginary";
+        const path = element("path", {
+          d: makePath(points), class: `curve-line ${part}`, stroke: color,
+          tabindex: "0", role: "img",
+          "aria-label": `${isColumn ? "column x" : "row y"}=${fixed}, ${label}`
+        });
+        const message = `${isColumn ? "column x" : "row y"}=${fixed}, ${label}`
+          + (reduceFrequencies ? `, reduced frequency ${frequency} modulo N` : "");
+        path.addEventListener("pointerenter", event => showTooltip(event, message));
+        path.addEventListener("pointermove", event => showTooltip(event, message));
+        path.addEventListener("pointerleave", hideTooltip);
+        path.addEventListener("focus", event => showTooltip(event, message));
+        path.addEventListener("blur", hideTooltip);
+        curveChart.appendChild(path);
+      };
+
+      if (!isColumn) {
+        for (let band = 0; band <= N; band++) {
+          const y = margin.top + band * bandSize;
+          curveChart.appendChild(element("line", {
+            x1: margin.left, y1: y, x2: width - margin.right, y2: y,
+            class: "curve-grid"
+          }));
+        }
+        for (let sample = 0; sample < N; sample++) {
+          const x = xForRow(sample);
+          curveChart.appendChild(element("line", {
+            x1: x, y1: margin.top, x2: x, y2: height - margin.bottom,
+            class: sample === 0 ? "curve-zero" : "curve-grid"
+          }));
+          const label = element("text", {
+            x, y: height - margin.bottom + 28, "text-anchor": "middle", class: "curve-axis-label"
+          });
+          label.textContent = sample;
+          curveChart.appendChild(label);
+        }
+        for (let band = 0; band < N; band++) {
+          const label = element("text", {
+            x: margin.left - 14, y: yForRow(band, 0) + 5,
+            "text-anchor": "end", class: "curve-axis-label"
+          });
+          label.textContent = `y=${band}`;
+          curveChart.appendChild(label);
+        }
+        const xLabel = element("text", {
+          x: margin.left + plotWidth / 2, y: height - 8,
+          "text-anchor": "middle", class: "curve-axis-label"
+        });
+        xLabel.textContent = "column index x";
+        curveChart.appendChild(xLabel);
+
+        const samples = Math.max(180, N * 28);
+        for (let fixed = 0; fixed < N; fixed++) {
+          const frequency = reduceFrequencies ? Math.min(fixed, N - fixed) : fixed;
+          const realPoints = [];
+          const imaginaryPoints = [];
+          for (let sample = 0; sample <= samples; sample++) {
+            const coordinate = (sample / samples) * (N - 1);
+            const angle = 2 * Math.PI * (reduceFrequencies ? frequency : fixed) * coordinate / N;
+            realPoints.push([xForRow(coordinate), yForRow(fixed, Math.cos(angle))]);
+            imaginaryPoints.push([xForRow(coordinate), yForRow(fixed, Math.sin(angle))]);
+          }
+          addPath(realPoints, "real", fixed, frequency);
+          addPath(imaginaryPoints, "imaginary", fixed, frequency);
+        }
+      } else {
+        // In column mode the independent index is vertical, so every fixed
+        // column gets its own vertical cosine/sine pair.
+        for (let band = 0; band <= N; band++) {
+          const x = margin.left + band * bandSize;
+          curveChart.appendChild(element("line", {
+            x1: x, y1: margin.top, x2: x, y2: height - margin.bottom,
+            class: "curve-grid"
+          }));
+        }
+        for (let sample = 0; sample < N; sample++) {
+          const y = yForColumn(sample);
+          curveChart.appendChild(element("line", {
+            x1: margin.left, y1: y, x2: width - margin.right, y2: y,
+            class: sample === 0 ? "curve-zero" : "curve-grid"
+          }));
+          const label = element("text", {
+            x: margin.left - 12, y: y + 5, "text-anchor": "end", class: "curve-axis-label"
+          });
+          label.textContent = sample;
+          curveChart.appendChild(label);
+        }
+        for (let band = 0; band < N; band++) {
+          const label = element("text", {
+            x: margin.left + bandSize * (band + .5), y: height - margin.bottom + 28,
+            "text-anchor": "middle", class: "curve-axis-label"
+          });
+          label.textContent = `x=${band}`;
+          curveChart.appendChild(label);
+        }
+        const yLabel = element("text", {
+          x: 18, y: margin.top + plotHeight / 2,
+          transform: `rotate(-90 18 ${margin.top + plotHeight / 2})`,
+          "text-anchor": "middle", class: "curve-axis-label"
+        });
+        yLabel.textContent = "row index y";
+        curveChart.appendChild(yLabel);
+
+        const samples = Math.max(180, N * 28);
+        for (let fixed = 0; fixed < N; fixed++) {
+          const frequency = reduceFrequencies ? Math.min(fixed, N - fixed) : fixed;
+          const realPoints = [];
+          const imaginaryPoints = [];
+          for (let sample = 0; sample <= samples; sample++) {
+            const coordinate = (sample / samples) * (N - 1);
+            const angle = 2 * Math.PI * (reduceFrequencies ? frequency : fixed) * coordinate / N;
+            realPoints.push([xForColumn(fixed, Math.cos(angle)), yForColumn(coordinate)]);
+            imaginaryPoints.push([xForColumn(fixed, Math.sin(angle)), yForColumn(coordinate)]);
+          }
+          addPath(realPoints, "real", fixed, frequency);
+          addPath(imaginaryPoints, "imaginary", fixed, frequency);
+        }
+      }
+    }
+
+    function setCurveMode(mode) {
+      curveMode = curveMode === mode ? null : mode;
+      const showingCurves = Boolean(curveMode);
+      matrixView.hidden = showingCurves;
+      curveView.hidden = !showingCurves;
+      frequencyButton.hidden = !showingCurves;
+      matrixButton.setAttribute("aria-pressed", String(!showingCurves));
+      lineCurveButton.setAttribute("aria-pressed", String(curveMode === "row"));
+      columnCurveButton.setAttribute("aria-pressed", String(curveMode === "column"));
+      if (showingCurves) {
+        curveHeading.textContent = curveMode === "row"
+          ? `Phase curves along rows${reduceFrequencies ? " · aliases reduced" : ""}`
+          : `Phase curves down columns${reduceFrequencies ? " · aliases reduced" : ""}`;
+        curveLegend.textContent = reduceFrequencies
+          ? "solid = cosine / real · dashed = sine / imaginary · aliased rows/columns share a color"
+          : "solid = cosine / real · dashed = sine / imaginary";
+        drawCurveChart();
+      }
+      hideTooltip();
+    }
+
+    function drawMatrix() {
+      let N = Number.parseInt(dimensionInput.value, 10);
+      if (!Number.isFinite(N)) N = 5;
+      N = Math.max(2, Math.min(20, N));
+      dimensionInput.value = N;
+
+      const cell = Math.max(42, Math.min(132, 1200 / N));
+      const left = 100;
+      const top = 46;
+      const right = 42;
+      const bottom = 34;
+      const width = left + N * cell + right;
+      const height = top + N * cell + bottom;
+      const radius = cell * .28;
+      svg.replaceChildren();
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      svg.setAttribute("aria-label", `Fourier phase matrix, ${N} by ${N}`);
+
+      const defs = element("defs");
+      const marker = element("marker", {
+        id: "arrowhead", markerWidth: 5, markerHeight: 5, refX: 4,
+        refY: 2.5, orient: "auto", markerUnits: "strokeWidth"
+      });
+      marker.appendChild(element("path", { d: "M0,0 L5,2.5 L0,5 z", fill: YELLOW }));
+      defs.appendChild(marker);
+      svg.appendChild(defs);
+
+      for (let x = 0; x < N; x++) {
+        svg.appendChild(textNode(`x=${x}`, {
+          x: left + (x + .5) * cell, y: top - 10,
+          "text-anchor": "middle", class: "axis-label"
+        }));
+      }
+      for (let y = 0; y < N; y++) {
+        svg.appendChild(textNode(`y=${y}`, {
+          x: left - 16, y: top + (y + .5) * cell + 5,
+          "text-anchor": "end", class: "row-label"
+        }));
+      }
+
+      for (let y = 0; y < N; y++) {
+        for (let x = 0; x < N; x++) {
+          const centerX = left + (x + .5) * cell;
+          const centerY = top + (y + .5) * cell;
+          const angle = 2 * Math.PI * x * y / N;
+          const real = Math.cos(angle);
+          const imaginary = Math.sin(angle);
+          const group = element("g", {
+            class: "cell", tabindex: "0",
+            "aria-label": `Entry y=${y}, x=${x}`
+          });
+          group.appendChild(element("rect", {
+            x: left + x * cell, y: top + y * cell,
+            width: cell, height: cell, class: "cell-frame", rx: 2
+          }));
+          group.appendChild(element("line", {
+            x1: centerX - radius, y1: centerY, x2: centerX + radius, y2: centerY, class: "axis"
+          }));
+          group.appendChild(element("line", {
+            x1: centerX, y1: centerY - radius, x2: centerX, y2: centerY + radius, class: "axis"
+          }));
+          group.appendChild(element("circle", {
+            cx: centerX, cy: centerY, r: radius, class: "unit-circle"
+          }));
+          group.appendChild(element("line", {
+            x1: centerX, y1: centerY,
+            x2: centerX + radius * real, y2: centerY - radius * imaginary,
+            class: "phase-vector", "marker-end": "url(#arrowhead)"
+          }));
+
+          const details = String.raw`<strong>Entry</strong> \(${y},${x}\)<br>`
+            + String.raw`phase: ${formatPhaseDegrees(angle)}<br>`
+            + `value: ${formatComplex(real, imaginary)}`;
+          group.addEventListener("pointerenter", event => showTooltip(event, details));
+          group.addEventListener("pointermove", event => showTooltip(event, details));
+          group.addEventListener("pointerleave", hideTooltip);
+          group.addEventListener("focus", event => showTooltip(event, details));
+          group.addEventListener("blur", hideTooltip);
+          svg.appendChild(group);
+        }
+      }
+      dimensionValue.value = N;
+      dimensionValue.textContent = N;
+      lastTooltipMessage = "";
+      hideTooltip();
+      if (curveMode) drawCurveChart();
+    }
+
+    dimensionInput.addEventListener("input", drawMatrix);
+    matrixButton.addEventListener("click", () => setCurveMode(null));
+    lineCurveButton.addEventListener("click", () => setCurveMode("row"));
+    columnCurveButton.addEventListener("click", () => setCurveMode("column"));
+    frequencyButton.addEventListener("click", () => {
+      reduceFrequencies = !reduceFrequencies;
+      frequencyButton.setAttribute("aria-pressed", String(reduceFrequencies));
+      if (curveMode) {
+        curveHeading.textContent = curveMode === "row"
+          ? `Phase curves along rows${reduceFrequencies ? " · aliases reduced" : ""}`
+          : `Phase curves down columns${reduceFrequencies ? " · aliases reduced" : ""}`;
+        curveLegend.textContent = reduceFrequencies
+          ? "solid = cosine / real · dashed = sine / imaginary · aliased rows/columns share a color"
+          : "solid = cosine / real · dashed = sine / imaginary";
+        drawCurveChart();
+      }
+    });
+    function releaseSliderFocus() {
+      dimensionInput.blur();
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: "qft-interactive-release-focus" }, "*");
+      }
+    }
+    dimensionInput.addEventListener("pointerup", releaseSliderFocus);
+    dimensionInput.addEventListener("pointercancel", releaseSliderFocus);
+    window.addEventListener("keydown", event => {
+      if (event.target === dimensionInput) return;
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: "qft-interactive-nav",
+          direction: event.key === "ArrowLeft" ? "prev" : "next"
+        }, "*");
+      }
+    }, true);
+    window.addEventListener("resize", hideTooltip);
+    drawMatrix();
+  </script>
+</body>
+</html>
