@@ -378,6 +378,20 @@
         // Time before the cursor is hidden (in ms)
         hideCursorTime: 5000
       });
+
+      // Forward arrow-key navigation from the interactive iframe to Reveal.
+      window.addEventListener('message', (event) => {
+        const data = event.data;
+        const frame = Reveal.getCurrentSlide()?.querySelector('iframe');
+        if (!frame || event.source !== frame.contentWindow || !data) return;
+        if (data.type === 'qft-interactive-nav') {
+          if (data.direction === 'prev') Reveal.prev();
+          if (data.direction === 'next') Reveal.next();
+        } else if (data.type === 'qft-interactive-release-focus') {
+          Reveal.getRevealElement().focus({ preventScroll: true });
+        }
+      });
+
       // Override SPACE to play / pause the video
       Reveal.addKeyBinding(
         {
