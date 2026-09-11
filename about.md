@@ -6,6 +6,8 @@ permalink: /about/
 
 I'm Tianrun Zhao, a PhD student in Computer Science at Stony Brook University. I'm broadly interested in formal mathematics, programming languages, and AI for theorem proving.
 
+[Curriculum Vitae (PDF)]({{ "/assets/files/Tianrun_Zhao_CV.pdf" | relative_url }})
+
 ## Education
 
 **Stony Brook University** &mdash; PhD in Computer Science *(2024 – present)*

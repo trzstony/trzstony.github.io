@@ -34,6 +34,14 @@ layout: default
         </a>
       {% endif %}
 
+      {% if site.data.profile.cv %}
+        <a class="icon-link" href="{{ site.data.profile.cv | relative_url }}" aria-label="Curriculum Vitae" title="Curriculum Vitae">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 2.75A1.75 1.75 0 0 0 5.25 4.5v15A1.75 1.75 0 0 0 7 21.25h10A1.75 1.75 0 0 0 18.75 19.5V8.56a1.75 1.75 0 0 0-.51-1.24l-3.55-3.57a1.75 1.75 0 0 0-1.24-.5H7Zm6.25 1.9 3.6 3.6h-2.6a1 1 0 0 1-1-1v-2.6ZM8.75 11a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5A.75.75 0 0 1 8.75 11Zm0 3.25a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75Zm0 3.25a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5h-3a.75.75 0 0 1-.75-.75Z"/>
+          </svg>
+        </a>
+      {% endif %}
+
       <a class="icon-link" href="{{ '/blog/' | relative_url }}" aria-label="Blog">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 4h16v2H4V4Zm0 4h10v2H4V8Zm0 4h16v2H4v-2Zm0 4h10v2H4v-2Z"/>
