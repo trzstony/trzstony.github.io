@@ -382,11 +382,13 @@
       // Forward arrow-key navigation from the interactive iframe to Reveal.
       window.addEventListener('message', (event) => {
         const data = event.data;
-        const frame = Reveal.getCurrentSlide()?.querySelector('iframe');
-        if (!frame || event.source !== frame.contentWindow || !data) return;
+        const isInteractiveFrame = Array.from(document.querySelectorAll('iframe'))
+          .some((frame) => frame.contentWindow === event.source);
+        if (!isInteractiveFrame || !data) return;
         if (data.type === 'qft-interactive-nav') {
           if (data.direction === 'prev') Reveal.prev();
           if (data.direction === 'next') Reveal.next();
+          Reveal.getRevealElement().focus({ preventScroll: true });
         } else if (data.type === 'qft-interactive-release-focus') {
           Reveal.getRevealElement().focus({ preventScroll: true });
         }
