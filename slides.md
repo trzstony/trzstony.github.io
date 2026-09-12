@@ -4,11 +4,11 @@ title: Slides
 permalink: /slides/
 ---
 
-<div class="post-list slide-list">
-  {% for slide in site.data.slides %}
-    <article>
-      <h2 style="margin:0;"><a href="{{ slide.url | relative_url }}">{{ slide.title }}</a></h2>
-      {% if slide.description %}<p>{{ slide.description }}</p>{% endif %}
-    </article>
+<div class="slide-categories">
+  {% for category in site.data.slides %}
+    <a class="slide-category" href="{{ category.url | relative_url }}">
+      <span>{{ category.title }}</span>
+      <span class="slide-category__arrow" aria-hidden="true">&rarr;</span>
+    </a>
   {% endfor %}
 </div>
