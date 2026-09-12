@@ -5,3 +5,6 @@
 - title: Quantum Fourier Transform
   url: /slides/qft/
   description: Animated slides introducing the quantum Fourier transform.
+- title: Density Operators
+  url: /slides/density-operators/
+  description: Animated slides on density operators and mixed states.
