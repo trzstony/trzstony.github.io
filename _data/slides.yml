@@ -16,4 +16,7 @@
 - title: Research
   slug: research
   url: /slides/research/
-  slides: []
+  slides:
+    - title: The Low-Individual-Degree Test Without the Diagonal-Lines Test Is Not Quantum-Sound
+      url: /slides/research/formal-large-q/
+      description: An animated counterexample over large finite fields.
