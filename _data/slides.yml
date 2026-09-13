@@ -9,6 +9,9 @@
     - title: Quantum Fourier Transform
       url: /slides/qft/
       description: Animated slides introducing the quantum Fourier transform.
+    - title: Quantum Phase Estimation
+      url: /slides/qpe/
+      description: Animated slides introducing quantum phase estimation.
     - title: Density Operators
       url: /slides/density-operators/
       description: Animated slides on density operators and mixed states.

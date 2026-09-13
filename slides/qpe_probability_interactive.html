@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase Estimation Probability Profile</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]] },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --black: #000000;
+      --white: #f4f4f2;
+      --yellow: #d8df20;
+      --muted: #a8a8a2;
+      --grid: #3f3f3b;
+      --axis: #77776f;
+      --tooltip: rgba(0, 0, 0, 0.94);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--black);
+      color: var(--white);
+      font-family: "CMU Serif", "Latin Modern Roman", "Computer Modern",
+        "STIX Two Text", Georgia, "Times New Roman", serif;
+      text-rendering: geometricPrecision;
+    }
+
+    main {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: clamp(0.55rem, 1.5vh, 1rem);
+      padding: clamp(1.1rem, 3.2vh, 2.2rem) clamp(1rem, 3.2vw, 3.5rem)
+        clamp(1.1rem, 3vh, 2rem);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+      font-weight: 400;
+      letter-spacing: 0;
+      text-align: center;
+    }
+
+    .equation {
+      width: 100%;
+      color: var(--yellow);
+      font-size: clamp(1.15rem, 1.55vw, 1.35rem);
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .workspace {
+      width: min(100%, 1800px);
+      min-height: 0;
+      justify-self: center;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) clamp(21rem, 30vw, 24rem);
+      gap: clamp(1.5rem, 3.2vw, 3.5rem);
+    }
+
+    .plot-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 0;
+    }
+
+    #probabilityPlot {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 250px;
+      shape-rendering: geometricPrecision;
+      text-rendering: geometricPrecision;
+      touch-action: none;
+    }
+
+    .plot-frame {
+      fill: none;
+      stroke: var(--axis);
+      stroke-width: 1.2;
+    }
+
+    .grid-line {
+      stroke: var(--grid);
+      stroke-width: 1;
+    }
+
+    .axis-label, .tick-label, .marker-label {
+      fill: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .axis-title {
+      fill: var(--white);
+      font-family: "CMU Serif", "Latin Modern Roman", "Computer Modern",
+        "STIX Two Text", Georgia, "Times New Roman", serif;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .probability-curve {
+      fill: none;
+      stroke: var(--yellow);
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .phase-marker {
+      stroke: var(--white);
+      stroke-width: 1.8;
+      stroke-dasharray: 9 7;
+    }
+
+    .phase-marker-label {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.15rem;
+      color: var(--white);
+      font-size: clamp(0.78rem, 1vw, 0.94rem);
+      line-height: 1;
+      white-space: nowrap;
+      pointer-events: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .phase-marker-label mjx-container { margin: 0 !important; }
+
+    .hover-guide {
+      display: none;
+      stroke: var(--muted);
+      stroke-width: 1.1;
+      stroke-dasharray: 4 5;
+      pointer-events: none;
+    }
+
+    .hover-point {
+      display: none;
+      fill: var(--black);
+      stroke: var(--yellow);
+      stroke-width: 2.5;
+      pointer-events: none;
+    }
+
+    .plot-hit {
+      fill: transparent;
+      cursor: crosshair;
+    }
+
+    .controls {
+      min-width: 0;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(1.6rem, 4vh, 2.8rem);
+      border-left: 1px solid var(--grid);
+      padding-left: clamp(1.25rem, 2.5vw, 2.4rem);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.65rem 0.8rem;
+      min-width: 0;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      grid-column: 1 / -1;
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      accent-color: var(--yellow);
+      cursor: pointer;
+    }
+
+    output {
+      min-width: 0;
+      color: var(--yellow);
+      font: 600 0.95rem/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #tooltip {
+      position: absolute;
+      z-index: 2;
+      display: none;
+      pointer-events: none;
+      padding: 0.48rem 0.65rem;
+      border: 1px solid var(--yellow);
+      border-radius: 0.3rem;
+      background: var(--tooltip);
+      color: var(--white);
+      font: 0.8rem/1.4 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 720px) {
+      main {
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 0.32rem;
+        padding-inline: 0.8rem;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 0.55rem;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1rem;
+        border-left: 0;
+        border-top: 1px solid var(--grid);
+        padding: 0.65rem 0 0;
+      }
+
+      .equation {
+        grid-column: 1 / -1;
+        font-size: clamp(0.9rem, 3vw, 1.15rem);
+      }
+
+      .control {
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .axis-label, .tick-label, .marker-label { font-size: 12px; }
+      .axis-title { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Phase-estimation measurement profile</h1>
+    <div class="workspace">
+      <div class="plot-wrap" id="plotWrap">
+        <svg id="probabilityPlot" role="img"
+          aria-label="Continuous phase-estimation measurement probability as a function of y over N">
+        </svg>
+        <div class="phase-marker-label" id="phaseMarkerLabel" aria-hidden="true">
+          <span>\(\phi=\)</span><span id="phaseMarkerValue">0.370</span>
+        </div>
+        <div id="tooltip" role="tooltip"></div>
+      </div>
+
+      <div class="controls" aria-label="Probability profile parameters">
+        <div class="equation">
+          \(P(y)=\frac{1}{N^2}
+          \frac{\sin^2\!\left(\pi N(\phi-y/N)\right)}
+          {\sin^2\!\left(\pi(\phi-y/N)\right)}\)
+        </div>
+        <div class="control">
+          <label for="phi">Phase &phi;</label>
+          <output id="phiValue" for="phi">0.370</output>
+          <input id="phi" type="range" min="0" max="1" step="0.001" value="0.370">
+        </div>
+        <div class="control">
+          <label for="dimension">N</label>
+          <output id="dimensionValue" for="dimension">8</output>
+          <input id="dimension" type="range" min="1" max="50" step="1" value="8">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const phiInput = document.getElementById("phi");
+    const dimensionInput = document.getElementById("dimension");
+    const phiValue = document.getElementById("phiValue");
+    const dimensionValue = document.getElementById("dimensionValue");
+    const plotWrap = document.getElementById("plotWrap");
+    const svg = document.getElementById("probabilityPlot");
+    const phaseMarkerLabel = document.getElementById("phaseMarkerLabel");
+    const phaseMarkerValue = document.getElementById("phaseMarkerValue");
+    const tooltip = document.getElementById("tooltip");
+
+    let plotBounds = null;
+    let hoverGuide = null;
+    let hoverPoint = null;
+
+    function svgElement(name, attributes = {}, text = "") {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const [key, value] of Object.entries(attributes)) {
+        node.setAttribute(key, String(value));
+      }
+      if (text) node.textContent = text;
+      return node;
+    }
+
+    function probability(t, phi, n) {
+      const delta = phi - t;
+      const denominator = Math.sin(Math.PI * delta);
+      if (Math.abs(denominator) < 1e-10) return 1;
+      const numerator = Math.sin(Math.PI * n * delta);
+      const value = (numerator * numerator) / (n * n * denominator * denominator);
+      return Math.min(1, Math.max(0, value));
+    }
+
+    function formatTick(value) {
+      if (value === 0 || value === 1) return String(value);
+      return value.toFixed(2).replace(/0$/, "");
+    }
+
+    function draw() {
+      const width = Math.max(320, Math.round(svg.clientWidth));
+      const height = Math.max(250, Math.round(svg.clientHeight));
+      const compact = width < 620;
+      const margin = {
+        top: 30,
+        right: compact ? 18 : 28,
+        bottom: compact ? 53 : 60,
+        left: compact ? 58 : 72
+      };
+      const x0 = margin.left;
+      const x1 = width - margin.right;
+      const y0 = margin.top;
+      const y1 = height - margin.bottom;
+      const innerWidth = x1 - x0;
+      const innerHeight = y1 - y0;
+      const phi = Number(phiInput.value);
+      const n = Number(dimensionInput.value);
+
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.replaceChildren();
+      plotBounds = { x0, x1, y0, y1, innerWidth, innerHeight, phi, n };
+
+      const xScale = (value) => x0 + value * innerWidth;
+      const yScale = (value) => y1 - value * innerHeight;
+      const xTicks = compact ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1];
+      const yTicks = compact ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1];
+
+      for (const tick of xTicks) {
+        const x = xScale(tick);
+        svg.appendChild(svgElement("line", {
+          x1: x, y1: y0, x2: x, y2: y1, class: "grid-line"
+        }));
+        svg.appendChild(svgElement("text", {
+          x, y: y1 + 24, class: "tick-label", "text-anchor": "middle"
+        }, formatTick(tick)));
+      }
+
+      for (const tick of yTicks) {
+        const y = yScale(tick);
+        svg.appendChild(svgElement("line", {
+          x1: x0, y1: y, x2: x1, y2: y, class: "grid-line"
+        }));
+        svg.appendChild(svgElement("text", {
+          x: x0 - 12, y: y + 5, class: "tick-label", "text-anchor": "end"
+        }, formatTick(tick)));
+      }
+
+      svg.appendChild(svgElement("rect", {
+        x: x0, y: y0, width: innerWidth, height: innerHeight,
+        class: "plot-frame", "data-chart-frame": ""
+      }));
+
+      const samples = Math.max(900, Math.round(innerWidth * 2));
+      const points = [];
+      for (let i = 0; i <= samples; i += 1) {
+        const t = i / samples;
+        points.push(`${i === 0 ? "M" : "L"}${xScale(t).toFixed(2)},${yScale(probability(t, phi, n)).toFixed(2)}`);
+      }
+      svg.appendChild(svgElement("path", {
+        d: points.join(" "), class: "probability-curve"
+      }));
+
+      const markerX = xScale(phi);
+      svg.appendChild(svgElement("line", {
+        x1: markerX, y1: y0, x2: markerX, y2: y1,
+        class: "phase-marker"
+      }));
+      phaseMarkerValue.textContent = phi.toFixed(3);
+      phaseMarkerLabel.style.left = `${markerX}px`;
+      phaseMarkerLabel.style.top = `${y0 + 5}px`;
+      phaseMarkerLabel.style.transform = phi > 0.82
+        ? "translateX(calc(-100% - 8px))"
+        : "translateX(8px)";
+
+      svg.appendChild(svgElement("text", {
+        x: (x0 + x1) / 2,
+        y: height - 12,
+        class: "axis-title",
+        "text-anchor": "middle",
+        "data-axis": "x"
+      }, "y / N"));
+      svg.appendChild(svgElement("text", {
+        x: compact ? 17 : 22,
+        y: (y0 + y1) / 2,
+        class: "axis-title",
+        "text-anchor": "middle",
+        transform: `rotate(-90 ${compact ? 17 : 22} ${(y0 + y1) / 2})`,
+        "data-axis": "y"
+      }, "Probability P(y)"));
+
+      hoverGuide = svgElement("line", {
+        x1: x0, y1: y0, x2: x0, y2: y1,
+        class: "hover-guide", "data-chart-hover-guide": ""
+      });
+      hoverPoint = svgElement("circle", {
+        cx: x0, cy: y1, r: 5,
+        class: "hover-point", "data-chart-hover-marker": ""
+      });
+      svg.appendChild(hoverGuide);
+      svg.appendChild(hoverPoint);
+
+      const hit = svgElement("rect", {
+        x: x0, y: y0, width: innerWidth, height: innerHeight,
+        class: "plot-hit", "data-chart-hit": "",
+        "data-chart-hover-overlay": "cross-series"
+      });
+      hit.addEventListener("pointermove", updateHover);
+      hit.addEventListener("pointerdown", updateHover);
+      hit.addEventListener("pointerleave", hideHover);
+      svg.appendChild(hit);
+
+      phiValue.value = phi.toFixed(3);
+      dimensionValue.value = String(n);
+    }
+
+    function updateHover(event) {
+      if (!plotBounds) return;
+      const rect = svg.getBoundingClientRect();
+      const svgX = (event.clientX - rect.left) * (svg.viewBox.baseVal.width / rect.width);
+      const t = Math.min(1, Math.max(0,
+        (svgX - plotBounds.x0) / plotBounds.innerWidth
+      ));
+      const p = probability(t, plotBounds.phi, plotBounds.n);
+      const x = plotBounds.x0 + t * plotBounds.innerWidth;
+      const y = plotBounds.y1 - p * plotBounds.innerHeight;
+
+      hoverGuide.setAttribute("x1", x);
+      hoverGuide.setAttribute("x2", x);
+      hoverGuide.style.display = "block";
+      hoverPoint.setAttribute("cx", x);
+      hoverPoint.setAttribute("cy", y);
+      hoverPoint.style.display = "block";
+
+      tooltip.textContent = `y / N = ${t.toFixed(4)}    P = ${p.toFixed(4)}`;
+      tooltip.style.display = "block";
+      const wrapRect = plotWrap.getBoundingClientRect();
+      const desiredLeft = event.clientX - wrapRect.left + 14;
+      const desiredTop = event.clientY - wrapRect.top - 42;
+      const maxLeft = Math.max(6, wrapRect.width - tooltip.offsetWidth - 6);
+      tooltip.style.left = `${Math.min(maxLeft, Math.max(6, desiredLeft))}px`;
+      tooltip.style.top = `${Math.max(6, desiredTop)}px`;
+    }
+
+    function hideHover() {
+      if (hoverGuide) hoverGuide.style.display = "none";
+      if (hoverPoint) hoverPoint.style.display = "none";
+      tooltip.style.display = "none";
+    }
+
+    phiInput.addEventListener("input", draw);
+    dimensionInput.addEventListener("input", draw);
+    window.addEventListener("keydown", (event) => {
+      if (window.parent === window) return;
+      const direction = {
+        ArrowRight: "next",
+        ArrowDown: "next",
+        ArrowLeft: "previous",
+        ArrowUp: "previous"
+      }[event.key];
+      if (!direction) return;
+      event.preventDefault();
+      event.stopPropagation();
+      window.parent.postMessage({ type: "qpe-slide-navigation", direction }, "*");
+    }, true);
+    new ResizeObserver(draw).observe(plotWrap);
+    draw();
+  </script>
+</body>
+</html>
