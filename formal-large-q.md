@@ -22,7 +22,7 @@ The motivation in the 2020 paper is explicit:
 
 Our counterexample shows that this direct simplification cannot work: deleting the diagonal-lines test without adding another compatibility mechanism destroys quantum soundness. Thus the result identifies a structural obstruction to this proposed simplification route. It does not rule out a different replacement for the diagonal-lines test.
 
-**Manuscript status:** The manuscript is now available on arXiv: [[arXiv link](https://arxiv.org/abs/2609.12346)].
+**Manuscript status:** The manuscript is now available on arXiv: [arXiv link](https://arxiv.org/abs/2609.12346).
 
 We use Manim for this presentation to make the counterexample and its key compatibility obstruction easier to see.
 
