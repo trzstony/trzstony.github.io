@@ -1092,7 +1092,9 @@
         minScale: 0.2,
         maxScale: 2.0,
         // Display presentation control arrows
-        controls: false,
+        controls: true,
+        // Keep video slides in presentation mode on narrow phone screens.
+        scrollActivationWidth: null,
         // Help the user learn the controls by providing hints, for example by
         // bouncing the down arrow when they first encounter a vertical slide
         controlsTutorial: true,
@@ -1311,7 +1313,7 @@
 
       function fixBase64VideoBackground(event) {
         // Analyze all slides backgrounds
-        for (const slide of Reveal.getBackgroundsElement().querySelectorAll('.slide-background')) {
+        for (const slide of Reveal.getRevealElement().querySelectorAll('.slide-background')) {
           // Get the slide video and its sources for each background
           const video = slide.querySelector('video');
           if (video) {
