@@ -15,6 +15,9 @@
     - title: Density Operators
       url: /slides/density-operators/
       description: Animated slides on density operators and mixed states.
+    - title: Shor's Factoring Algorithm
+      url: /slides/shor/
+      description: Animated slides on Shor's algorithm, from the reduction to order finding through phase estimation and continued fractions.
 
 - title: Research
   slug: research
