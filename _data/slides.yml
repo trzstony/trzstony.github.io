@@ -6,6 +6,12 @@
     - title: Quantum Communication
       url: /slides/quantum-communication/
       description: Animated slides on quantum communication and information transfer.
+    - title: BB84 Quantum Key Distribution
+      url: /slides/bb84/
+      description: Animated slides walking through the BB84 protocol step by step, including Eve's intercept-resend attack.
+    - title: E91 Quantum Key Distribution
+      url: /slides/e91/
+      description: Animated slides on Ekert's entanglement-based protocol, the CHSH Bell test, and why Eve can't hide.
     - title: Quantum Fourier Transform
       url: /slides/qft/
       description: Animated slides introducing the quantum Fourier transform.
